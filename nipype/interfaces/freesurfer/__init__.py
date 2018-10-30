@@ -18,7 +18,7 @@ from .utils import (
     SampleToSurface, SurfaceSmooth, SurfaceTransform, Surface2VolTransform,
     SurfaceSnapshots, ApplyMask, MRIsConvert, MRITessellate, MRIPretess,
     MRIMarchingCubes, SmoothTessellation, MakeAverageSubject,
-    ExtractMainComponent, Tkregister2, AddXFormToHeader,
+    ExtractMainComponent, Tkregister2, TransformSurface2Talairach, AddXFormToHeader,
     CheckTalairachAlignment, TalairachAVI, TalairachQC, RemoveNeck, MRIFill,
     MRIsInflate, Sphere, FixTopology, EulerNumber, RemoveIntersection,
     MakeSurfaces, Curvature, CurvatureStats, Jacobian, MRIsCalc, VolumeMask,
