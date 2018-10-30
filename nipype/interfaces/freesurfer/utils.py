@@ -1920,6 +1920,75 @@ class TransformSurface2Talairach(FSCommand):
         return runtime
 
 
+class FloodfillSurfaceInputSpec(FSTraitedSpec):
+    """
+    This program floodfills the interior of a surface and writes
+    the results into a volume of the specified resolution.
+    """
+
+    in_file = File(exists=True, mandatory=True, argstr='%s',
+                   position=-2, desc='Input surface to translate.')
+    conform_before_writing = traits.Bool(
+        argstr='-c', position=1, desc='Conform the volume before writing?')
+    resolution = traits.Float(
+        argstr="-r %.4f", desc="Set the resolution of the output volume (default = 0.250 mm/voxel)")
+    out_file = File(argstr='%s', position=-1, genfile=True,
+                    desc='output filename or True to generate one')
+
+
+class FloodfillSurfaceOutputSpec(TraitedSpec):
+    """
+    This program floodfills the interior of a surface and writes
+    the results into a volume of the specified resolution.
+    """
+    out_file = File(exists=True, desc='Filled volume file')
+
+
+class FloodfillSurface(FSCommand):
+    """
+    This program floodfills the interior of a surface and writes
+    the results into a volume of the specified resolution.
+
+    Example
+    -------
+
+    >>> import nipype.interfaces.freesurfer as fs
+    >>> fill = fs.FloodfillSurface()
+    >>> fill.inputs.in_file = 'lh.hippocampus.stl'
+    >>> fill.run() # doctest: +SKIP
+    """
+    _cmd = 'mris_fill'
+    input_spec = FloodfillSurfaceInputSpec
+    output_spec = FloodfillSurfaceOutputSpec
+
+    def _list_outputs(self):
+        outputs = self.output_spec().get()
+        outputs['out_file'] = self._gen_outfilename()
+        return outputs
+
+    def _gen_filename(self, name):
+        if name is 'out_file':
+            return self._gen_outfilename()
+        else:
+            return None
+
+    def _gen_outfilename(self):
+        if isdefined(self.inputs.out_file):
+            return os.path.abspath(self.inputs.out_file)
+        else:
+            _, name, ext = split_filename(self.inputs.in_file)
+            return os.path.abspath(name + '_filled.nii')
+
+    def _run_interface(self, runtime):
+        # The returncode is meaningless in BET.  So check the output
+        # in stderr and if it's set, then update the returncode
+        # accordingly.
+        runtime = super(FloodfillSurface, self)._run_interface(runtime)
+        if "failed" in runtime.stderr:
+            self.raise_exception(runtime)
+        return runtime
+
+
 class AddXFormToHeaderInputSpec(FSTraitedSpec):
 
     # required
