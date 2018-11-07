@@ -135,7 +135,7 @@ class MeshFixInputSpec(CommandLineInputSpec):
     in_file1 = File(exists=True, argstr="%s", position=1, mandatory=True)
     in_file2 = File(exists=True, argstr="%s", position=2)
     output_type = traits.Enum(
-        'off', ['stl', 'msh', 'wrl', 'vrml', 'fs', 'off'],
+        'off', ['stl', 'msh', 'wrl', 'vrml', 'fsmesh', 'off'],
         usedefault=True,
         desc='The output type to save the file as.')
     out_filename = File(
@@ -187,7 +187,7 @@ class MeshFix(CommandLine):
         if isdefined(self.inputs.out_filename):
             path, name, ext = split_filename(self.inputs.out_filename)
             ext = ext.replace('.', '')
-            out_types = ['stl', 'msh', 'wrl', 'vrml', 'fs', 'off']
+            out_types = ['stl', 'msh', 'wrl', 'vrml', 'fsmesh', 'off']
             # Make sure that the output filename uses one of the possible file types
             if any(ext == out_type.lower() for out_type in out_types):
                 outputs['mesh_file'] = op.abspath(self.inputs.out_filename)
@@ -206,8 +206,8 @@ class MeshFix(CommandLine):
 
     def _gen_outfilename(self):
         _, name, _ = split_filename(self.inputs.in_file1)
-        if self.inputs.save_as_freesurfer_mesh or self.inputs.output_type == 'fs':
-            self.inputs.output_type = 'fs'
+        if self.inputs.save_as_freesurfer_mesh or self.inputs.output_type == 'fsmesh':
+            self.inputs.output_type = 'fsmesh'
             self.inputs.save_as_freesurfer_mesh = True
         if self.inputs.save_as_stl or self.inputs.output_type == 'stl':
             self.inputs.output_type = 'stl'
