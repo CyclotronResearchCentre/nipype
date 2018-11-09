@@ -3,9 +3,10 @@ from __future__ import (print_function, division, unicode_literals,
                         absolute_import)
 
 import nibabel as nb
+import numpy as np
 
 from ... import logging
-from ..base import TraitedSpec, File, isdefined
+from ..base import TraitedSpec, File, isdefined, BaseInterface, traits
 from .base import DipyDiffusionInterface, DipyBaseInterfaceInputSpec
 
 IFLOGGER = logging.getLogger('nipype.interface')
