@@ -8,10 +8,12 @@ import numpy as np
 from ... import logging
 from ..base import TraitedSpec, File, isdefined, BaseInterface, traits
 from .base import DipyDiffusionInterface, DipyBaseInterfaceInputSpec
+from nipype.utils.filemanip import split_filename
 
 import dipy.reconst.dti as dti
 from dipy.core.gradients import GradientTable
 from dipy.reconst.vec_val_sum import vec_val_vect
+import os.path as op
 
 IFLOGGER = logging.getLogger('nipype.interface')
 
@@ -340,7 +342,7 @@ class EstimateConductivity(BaseInterface):
         img = nb.Nifti1Image(conductivity_data, affine=affine)
         out_file = op.abspath(self._gen_outfilename())
         nb.save(img, out_file)
-        iflogger.info(
+        IFLOGGER.info(
             'Conductivity tensor image saved as {i}'.format(i=out_file))
         return runtime
 
