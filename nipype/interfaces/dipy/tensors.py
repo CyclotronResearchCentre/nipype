@@ -9,7 +9,69 @@ from ... import logging
 from ..base import TraitedSpec, File, isdefined, BaseInterface, traits
 from .base import DipyDiffusionInterface, DipyBaseInterfaceInputSpec
 
+import dipy.reconst.dti as dti
+from dipy.core.gradients import GradientTable
+from dipy.reconst.vec_val_sum import vec_val_vect
+
 IFLOGGER = logging.getLogger('nipype.interface')
+
+
+_ut_indices = np.array([[0, 1, 2],
+                        [1, 3, 4],
+                        [2, 4, 5]])
+
+
+def from_upper_triangular(D):
+    """ Returns a tensor given the six unique tensor elements
+
+    Given the six unique tensor elments (in the order: Dxx, Dxy, Dxz, Dyy, Dyz,
+    Dzz) returns a 3 by 3 tensor. All elements after the sixth are ignored.
+
+    Parameters
+    -----------
+    D : array_like, (..., >6)
+        Unique elements of the tensors
+
+    Returns
+    --------
+    tensor : ndarray (..., 3, 3)
+        3 by 3 tensors
+
+    """
+    return D[..., _ut_indices]
+
+
+_ut_rows = np.array([0, 0, 0, 1, 1, 2])
+_ut_cols = np.array([0, 1, 2, 1, 2, 2])
+
+
+def upper_triangular(tensor, b0=None):
+    """
+    Returns the six upper triangular values of the tensor and a dummy variable
+    if b0 is not None
+
+    Parameters
+    ----------
+    tensor : array_like (..., 3, 3)
+        a collection of 3, 3 diffusion tensors
+    b0 : float
+        if b0 is not none log(b0) is returned as the dummy variable
+
+    Returns
+    -------
+    D : ndarray
+        If b0 is none, then the shape will be (..., 6) otherwise (..., 7)
+
+    """
+    if tensor.shape[-2:] != (3, 3):
+        raise ValueError("Diffusion tensors should be (..., 3, 3)")
+    if b0 is None:
+        return tensor[..., _ut_rows, _ut_cols]
+    else:
+        D = np.empty(tensor.shape[:-2] + (7,), dtype=tensor.dtype)
+        D[..., 6] = -np.log(b0)
+        D[..., :6] = tensor[..., _ut_rows, _ut_cols]
+        return D
 
 
 class DTIInputSpec(DipyBaseInterfaceInputSpec):
