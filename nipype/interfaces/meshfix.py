@@ -70,8 +70,7 @@ class MeshFixInputSpec(CommandLineInputSpec):
 
     x_shift = traits.Int(
         argstr='--smooth %d',
-        desc=
-        "Shifts the coordinates of the vertices when saving. Output must be in FreeSurfer format"
+        desc="Shifts the coordinates of the vertices when saving. Output must be in FreeSurfer format"
     )
 
     # Cutting, decoupling, dilation
@@ -80,8 +79,7 @@ class MeshFixInputSpec(CommandLineInputSpec):
         desc="Remove triangles of 1st that are outside of the 2nd shell.")
     cut_inner = traits.Int(
         argstr='--cut-inner %d',
-        desc=
-        "Remove triangles of 1st that are inside of the 2nd shell. Dilate 2nd by N; Fill holes and keep only 1st afterwards."
+        desc="Remove triangles of 1st that are inside of the 2nd shell. Dilate 2nd by N; Fill holes and keep only 1st afterwards."
     )
     decouple_inin = traits.Int(
         argstr='--decouple-inin %d',
@@ -101,25 +99,29 @@ class MeshFixInputSpec(CommandLineInputSpec):
 
     finetuning_inwards = traits.Bool(
         argstr='--fineTuneIn ',
-        requires=['finetuning_distance', 'finetuning_substeps'])
+        requires=['finetuning_distance', 'finetuning_substeps'],
+        position=-3
+    )
     finetuning_outwards = traits.Bool(
-        argstr='--fineTuneIn ',
+        argstr='--fineTuneOut ',
         requires=['finetuning_distance', 'finetuning_substeps'],
         xor=['finetuning_inwards'],
-        desc=
-        'Similar to finetuning_inwards, but ensures minimal distance in the other direction'
+        desc='Similar to finetuning_inwards, but ensures minimal distance in the other direction',
+        position=-3
     )
     finetuning_distance = traits.Float(
         argstr='%f',
         requires=['finetuning_substeps'],
         desc="Used to fine-tune the minimal distance between surfaces."
-        "A minimal distance d is ensured, and reached in n substeps. When using the surfaces for subsequent volume meshing by gmsh, this step prevent too flat tetrahedra2)"
+        "A minimal distance d is ensured, and reached in n substeps. When using the surfaces for subsequent volume meshing by gmsh, this step prevent too flat tetrahedra2)",
+        position=-2
     )
     finetuning_substeps = traits.Int(
         argstr='%d',
         requires=['finetuning_distance'],
         desc="Used to fine-tune the minimal distance between surfaces."
-        "A minimal distance d is ensured, and reached in n substeps. When using the surfaces for subsequent volume meshing by gmsh, this step prevent too flat tetrahedra2)"
+        "A minimal distance d is ensured, and reached in n substeps. When using the surfaces for subsequent volume meshing by gmsh, this step prevent too flat tetrahedra2)",
+        position=-1
     )
 
     dilation = traits.Int(
@@ -133,7 +135,7 @@ class MeshFixInputSpec(CommandLineInputSpec):
     in_file1 = File(exists=True, argstr="%s", position=1, mandatory=True)
     in_file2 = File(exists=True, argstr="%s", position=2)
     output_type = traits.Enum(
-        'off', ['stl', 'msh', 'wrl', 'vrml', 'fs', 'off'],
+        'off', ['stl', 'msh', 'wrl', 'vrml', 'fsmesh', 'off'],
         usedefault=True,
         desc='The output type to save the file as.')
     out_filename = File(
@@ -185,7 +187,7 @@ class MeshFix(CommandLine):
         if isdefined(self.inputs.out_filename):
             path, name, ext = split_filename(self.inputs.out_filename)
             ext = ext.replace('.', '')
-            out_types = ['stl', 'msh', 'wrl', 'vrml', 'fs', 'off']
+            out_types = ['stl', 'msh', 'wrl', 'vrml', 'fsmesh', 'off']
             # Make sure that the output filename uses one of the possible file types
             if any(ext == out_type.lower() for out_type in out_types):
                 outputs['mesh_file'] = op.abspath(self.inputs.out_filename)
@@ -204,8 +206,8 @@ class MeshFix(CommandLine):
 
     def _gen_outfilename(self):
         _, name, _ = split_filename(self.inputs.in_file1)
-        if self.inputs.save_as_freesurfer_mesh or self.inputs.output_type == 'fs':
-            self.inputs.output_type = 'fs'
+        if self.inputs.save_as_freesurfer_mesh or self.inputs.output_type == 'fsmesh':
+            self.inputs.output_type = 'fsmesh'
             self.inputs.save_as_freesurfer_mesh = True
         if self.inputs.save_as_stl or self.inputs.output_type == 'stl':
             self.inputs.output_type = 'stl'

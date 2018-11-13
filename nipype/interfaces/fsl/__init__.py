@@ -29,7 +29,7 @@ from .maths import (ChangeDataType, Threshold, MeanImage, ApplyMask,
                     IsotropicSmooth, TemporalFilter, DilateImage, ErodeImage,
                     SpatialFilter, UnaryMaths, BinaryMaths, MultiImageMaths,
                     MaxnImage, MinImage, MedianImage, PercentileImage,
-                    AR1Image)
+                    AR1Image, DecomposeTensor)
 from .possum import B0Calc
 from .fix import (AccuracyTester, Classifier, Cleaner, FeatureExtractor,
                   Training, TrainingSetCreator)
