@@ -101,7 +101,9 @@ existing pipeline systems.
 # versions
 NIBABEL_MIN_VERSION = '2.1.0'
 NETWORKX_MIN_VERSION = '1.9'
-NUMPY_MIN_VERSION = '1.9.0'
+# Numpy bug in python 3.7:
+# https://www.opensourceanswers.com/blog/you-shouldnt-use-python-37-for-data-science-right-now.html
+NUMPY_MIN_VERSION = '1.9.0' if sys.version_info < (3, 7) else '1.15.4'
 SCIPY_MIN_VERSION = '0.14'
 TRAITS_MIN_VERSION = '4.6'
 DATEUTIL_MIN_VERSION = '2.2'
@@ -161,7 +163,7 @@ EXTRA_REQUIRES = {
     'doc': ['Sphinx>=1.4', 'numpydoc', 'matplotlib', 'pydotplus', 'pydot>=1.2.3'],
     'tests': TESTS_REQUIRES,
     'specs': ['yapf'],
-    'nipy': ['nitime', 'nilearn', 'dipy', 'nipy', 'matplotlib'],
+    'nipy': ['nitime', 'nilearn<0.5.0', 'dipy', 'nipy', 'matplotlib'],
     'profiler': ['psutil>=5.0'],
     'duecredit': ['duecredit'],
     'xvfbwrapper': ['xvfbwrapper'],

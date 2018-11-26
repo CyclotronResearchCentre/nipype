@@ -100,18 +100,20 @@ class MeshFixInputSpec(CommandLineInputSpec):
     finetuning_inwards = traits.Bool(
         argstr='--fineTuneIn ',
         requires=['finetuning_distance', 'finetuning_substeps'],
-        position=-3
+        position=-3,
+        desc="Used to fine-tune the minimal distance between surfaces."
     )
     finetuning_outwards = traits.Bool(
         argstr='--fineTuneOut ',
         requires=['finetuning_distance', 'finetuning_substeps'],
+        position=-3,
         xor=['finetuning_inwards'],
-        desc='Similar to finetuning_inwards, but ensures minimal distance in the other direction',
-        position=-3
+        desc='Similar to finetuning_inwards, but ensures minimal distance in the other direction'
     )
     finetuning_distance = traits.Float(
         argstr='%f',
         requires=['finetuning_substeps'],
+        position=-2,
         desc="Used to fine-tune the minimal distance between surfaces."
         "A minimal distance d is ensured, and reached in n substeps. When using the surfaces for subsequent volume meshing by gmsh, this step prevent too flat tetrahedra2)",
         position=-2
@@ -119,6 +121,7 @@ class MeshFixInputSpec(CommandLineInputSpec):
     finetuning_substeps = traits.Int(
         argstr='%d',
         requires=['finetuning_distance'],
+        position=-1,
         desc="Used to fine-tune the minimal distance between surfaces."
         "A minimal distance d is ensured, and reached in n substeps. When using the surfaces for subsequent volume meshing by gmsh, this step prevent too flat tetrahedra2)",
         position=-1
